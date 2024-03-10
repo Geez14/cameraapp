@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <title>WebCam</title>
     <style>
     </style>
@@ -27,92 +29,36 @@
             </div>
             <img src="{%static 'assets/noise.gif'%}" alt="Camera" id="cam0">
         </main>
-
-        <div class="tools">
+    <!-- FORM TO EDIT GLOBAL SETTINGS -->
+        <form id="configuration-form" action="" method="post" class="tools">
+            {% csrf_token %}
             <select name="performance" id="perf_selector">
                 <option value="0">HIGH SPEED</option>
-                <option value="1">ACCURATE</option>
-                <option value="2">BALANCED</option>
+                <option value="1">BALANCED</option>
+                <option value="2">ACCURATE</option>
             </select>
-            <button>go</button>
+            <button onclick="alert('configuration changed!');updateVideo()" type="submit">go</button>
             <div class="line"></div>
             <button id="btn_pause" onclick="pauseFunction()" value="0">StartVideo</button>
-        </div>
+        </form>
 
         <footer id="video_analysis">
             <a href="analyse">Video Analyser</a>
         </footer>
+
+        <script src="{% static 'js/main.js' %}"></script>
         <script>
-            const displayTime = document.querySelector(".display-time");
-            // Time
-            function showTime() {
-                let time = new Date();
-                displayTime.innerText = time.toLocaleTimeString("en-US", { hour12: false });
-                setTimeout(showTime, 1000);
-            }
-
-            showTime();
-
-            // Date
-            function updateDate() {
-                let today = new Date();
-
-                // return number
-                let dayName = today.getDay(),
-                    dayNum = today.getDate(),
-                    month = today.getMonth(),
-                    year = today.getFullYear();
-
-                const months = [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December",
-                ];
-                const dayWeek = [
-                    "Sunday",
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday",
-                ];
-                // value -> ID of the html element
-                const IDCollection = ["day", "daynum", "month", "year"];
-                // return value array with number as a index
-                const val = [dayWeek[dayName], dayNum, months[month], year];
-                for (let i = 0; i < IDCollection.length; i++) {
-                    document.getElementById(IDCollection[i]).firstChild.nodeValue = val[i];
-                }
-            }
-
-            updateDate();
-
-            function pauseFunction() {
-                const btn = document.getElementById("btn_pause")
-                const img = document.getElementById("cam0")
-                if (btn.value == "1") {
-                    console.log("BUTTONCLICK, pausing....");
-                    btn.value = "0"
-                    btn.innerText = "StartVideo"
-                    img.src = "/static/assets/noise.gif"
-                }
-                else {
-                    btn.value = "1"
-                    btn.innerText = "PauseVideo"
-                    console.log("Button play clicked!");
-                    img.src = "/video"
-                }
-            }
+            $(document).on('submit', '#configuration-form', function(e){
+                e.preventDefault();
+                $.ajax({
+                    type:"POST",
+                    url: "",
+                    data: {
+                        performance: $('#perf_selector').val(),
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                })
+            })
         </script>
 </body>
 
