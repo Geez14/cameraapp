@@ -3,8 +3,9 @@ from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from . import camera
+from datetime import datetime
 import cv2
-
+import re
 __globalconfig = {"fps":30}
 
 def home(request):
@@ -48,12 +49,35 @@ def video(request):
 
 
 def analyse(request):
-    if request.method == "POST" and request.FILES.get("file"):
-        uploaded_file = request.FILES["file"]
+    return render(request, "application.html")
+
+def sanitize(filename):
+    # not_of(\w\s.-), \w = alphanumeric+_ \s = space, . = pullstop, - = hyphen
+    filename = re.sub(r'[^\w\s.-]*',"", filename).strip().lower()
+    filename = re.sub(r'[-\s]+',"_", filename)
+    filename = re.sub(r'(\.)+',".", filename)
+    return filename
+
+def upload_handler(request):
+    print("SAVING FILES...")
+    if request.method == "POST" and request.FILES.get("files"):
+        file_urls = []
+        file_names = []
         fss = FileSystemStorage(location=settings.MEDIA_ROOT)
-        print(settings.MEDIA_ROOT)
-        filename = fss.save(uploaded_file.name, uploaded_file)
-        file_url = fss.url(filename)
-        print(file_url)
-        return render(request, "application.html", {"filename": "file_url"})
+        for uploaded_file in request.FILES.getlist("files"):
+            # %d for date %m form month %Y for year %M for minute ... read the references
+            # our file must not contain :/\* symbols
+            current_date_time = str(datetime.now().strftime("%d_%m_%Y_%H%M%S_"))
+            file_name = current_date_time+sanitize(uploaded_file.name)
+            file_names.append(file_name)
+            saved_file = fss.save(file_name, uploaded_file)
+            url = fss.url(saved_file)
+            file_names.append(url)
+
+        #debug
+        print(fss.base_url)
+        print(fss.base_location)
+        print(fss.location)
+        print(file_names)
+        return render(request, "done.html", {"file_urls":file_urls, "file_names":file_names})
     return render(request, "application.html")

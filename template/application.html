@@ -17,6 +17,31 @@
         #upload:hover {
             background-color: rgb(193, 216, 236);
         }
+
+        .spinner {
+            margin: 25px;
+            height: 100px;
+            width: 100px;
+            margin-left: auto;
+            margin-right: auto;
+            border: solid 10px rgb(76, 76, 76);
+            border-radius: 50% 50% 50% 50%;
+            border-right-color: transparent;
+            animation-name: rotate;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -25,12 +50,26 @@
         <h1>Upload your video here</h1>
         <div id="upload">
             click here or drag and drop to upload video
-            <form action="analyse" method="post" enctype="multipart/form-data">
+            <form action="done" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="file" name="file" autocomplete="off" required>
-                <input type="submit" value="Upload and Display">
+                <input id="uploadedFile" type="file" name="files" autocomplete="off" multiple required>
+                <input id="upload_btn" type="submit" onclick=start() value="Upload and Display">
+                <div style="display:flex; flex-direction:column">
+                    <div id="spinner" class="spinner" style="display: none;"></div>
+                    <div id="spinner_msg" style="display: none;">Uploading...</div>
+                </div>
             </form>
     </center>
+    <script>
+        function start() {
+            const status = document.getElementById("uploadedFile").files;
+            if (status.length != 0) {
+                document.getElementById("upload_btn").disable = true;
+                document.getElementById("spinner").style.display = "block";
+                document.getElementById("spinner_msg").style.display = "block";
+            }
+        }
+    </script>
 </body>
 
 </html>
