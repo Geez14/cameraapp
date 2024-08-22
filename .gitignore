@@ -1,5 +1,6 @@
 .java
-__pycache__
+ __pycache__
 .vscode
 .exe
 EvenGroup.py
+.pyc

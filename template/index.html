@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'static/css/main.css' %}">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <title>WebCam</title>
@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <center>
+    <div class="center">
         <main>
             <h1>SafeWalk</h1>
             <div class="container">
@@ -29,7 +29,7 @@
             </div>
             <img src="{%static 'assets/noise.gif'%}" alt="Camera" id="cam0">
         </main>
-    <!-- FORM TO EDIT GLOBAL SETTINGS -->
+        <!-- FORM TO EDIT GLOBAL SETTINGS -->
         <form id="configuration-form" action="" method="post" class="tools">
             {% csrf_token %}
             <select name="performance" id="perf_selector">
@@ -41,25 +41,22 @@
             <div class="line"></div>
             <button id="btn_pause" onclick="pauseFunction()" value="0">StartVideo</button>
         </form>
-
-        <footer id="video_analysis">
-            <a href="analyse">Video Analyser</a>
-        </footer>
-
-        <script src="{% static 'js/main.js' %}"></script>
-        <script>
-            $(document).on('submit', '#configuration-form', function(e){
-                e.preventDefault();
-                $.ajax({
-                    type:"POST",
-                    url: "",
-                    data: {
-                        performance: $('#perf_selector').val(),
-                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                    },
-                })
+        <a href="analyse">Video Analyser</a>
+    </div>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        $(document).on('submit', '#configuration-form', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "",
+                data: {
+                    performance: $('#perf_selector').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
             })
-        </script>
+        })
+    </script>
 </body>
 
 </html>
